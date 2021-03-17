@@ -1,0 +1,12 @@
+display:
+  new: true
+  error: false
+  unchanged: false
+report:
+  text:
+    footer: false
+    line_length: 3
+  telegram2:
+    bot_token: ''
+    chat_id: ''
+    enabled: true

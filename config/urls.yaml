@@ -1,0 +1,23 @@
+name: "NYFA > Jobs"
+# command: "cat /home/chazeon/Documents/Projects/NYFANotifier/test.json"
+url: https://app.nyfa.org/api/Listing?Type=Job&q=&page=1&location=&salary=&positionType=&positionLevel=&education=&industrySector=
+filter:
+  - shellpipe: jq .
+  - shellpipe: |
+      DATA=`mktemp | xargs tee`
+      TMPL=`mktemp`
+      cat > $TMPL <<EOF
+      {% for listing in listings %}
+      <a href="https://www.nyfa.org/view-job?id={{listing.listingId}}"><b>{{ listing.organization }}</b></a>
+      <i>{{ listing.title }}</i>
+      <b>▪︎ Position Type:</b> {{ listing.positionType }}
+      <b>▪︎ Position Level:</b> {{ listing.positionLevel }}
+      <b>▪︎ Sector: </b>{{ listing.industrySector }}
+      <b>▪︎ Location: </b>{{ listing.city }}, {{ listing.state }}
+      <b>▪︎ Posted on: </b>{{ listing.postOnString }}
+      {% endfor %}
+      EOF
+      jinja2 --format=json "$TMPL" "$DATA"
+diff_tool: diff
+diff_filter:
+  - shellpipe: grep -E "^>" | cut -c 3-
